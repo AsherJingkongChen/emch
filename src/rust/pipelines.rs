@@ -75,26 +75,26 @@ pub fn inference_semantic_search_on_scidata(
       (
         // tqdm!(
           corpus
-          .iter()
-          .filter_map(|corpus| {
-            get_sentence_embedding(
-              corpus.sentence.as_str(),
-              &model, &tokenizer
-            ).ok()
-          })
-          .into_iter()
-        .collect::<Vec<_>>(),
+            .iter()
+            .filter_map(|corpus| {
+              get_sentence_embedding(
+                corpus.sentence.as_str(),
+                &model, &tokenizer
+              ).ok()
+            })
+            .into_iter()
+            .collect::<Vec<_>>(),
         // tqdm!(
           queries
-          .iter()
-          .filter_map(|query| {
-            get_sentence_embedding(
-              query.sentence.as_str(),
-              &model, &tokenizer
-            ).ok()
-          })
-          .into_iter()
-        .collect::<Vec<_>>()
+            .iter()
+            .filter_map(|query| {
+              get_sentence_embedding(
+                query.sentence.as_str(),
+                &model, &tokenizer
+              ).ok()
+            })
+            .into_iter()
+            .collect::<Vec<_>>()
       )
     };
 
@@ -147,53 +147,55 @@ where
     let encoded_inputs = CowArray::from(
       Array::from_iter(
         tokenizer
-        .encode_batch(chunk_of_inputs.to_vec(), true)?
-        .iter()
-        .map(|encoded_input| {
-          encoded_input.get_ids().iter()
-            .chain(encoded_input.get_attention_mask())
-            .chain(encoded_input.get_type_ids())
-        }).flatten()
-        .map(|n: &u32| *n as i64)
+          .encode_batch(chunk_of_inputs.to_vec(), true)?
+          .iter()
+          .map(|encoded_input| {
+            encoded_input.get_ids().iter()
+              .chain(encoded_input.get_attention_mask())
+              .chain(encoded_input.get_type_ids())
+          }).flatten()
+          .map(|n: &u32| *n as i64)
       )
     );
     let seq_length = encoded_inputs.len() / batch_size / 3;
     let mut encoded_inputs =
       encoded_inputs
-      .to_shape((batch_size, 3, seq_length))?;
+        .to_shape((batch_size, 3, seq_length))?;
     encoded_inputs.swap_axes(0, 1);
     let encoded_inputs =
       encoded_inputs
-      .axis_iter(Axis(0))
-      .map(|mat| CowArray::from(mat).into_dyn())
-      .collect::<Vec<_>>();
-    let attention_masks = encoded_inputs[1]
-      .to_owned()
-      .insert_axis(Axis(2))
-      .map(|n| *n as f32);
+        .axis_iter(Axis(0))
+        .map(|mat| CowArray::from(mat).into_dyn())
+        .collect::<Vec<_>>();
+    let attention_masks =
+      encoded_inputs[1]
+        .to_owned()
+        .insert_axis(Axis(2))
+        .map(|n| *n as f32);
     let encoded_inputs =
       encoded_inputs
-      .iter()
-      .filter_map(|array| {
-        Value::from_array(model.allocator(), array).ok()
-      }).collect::<Vec<_>>();
+        .iter()
+        .filter_map(|array| {
+          Value::from_array(model.allocator(), array).ok()
+        }).collect::<Vec<_>>();
     let token_embeddings =
       model
-      .run(encoded_inputs)?[0]
-      .try_extract()?;
+        .run(encoded_inputs)?[0]
+        .try_extract()?;
     let sentence_embeddings_mean_pooled =
-      token_embeddings.view()
-      .mul(&attention_masks)
-      .sum_axis(Axis(1))
-      .div(
-        attention_masks
+      token_embeddings
+        .view()
+        .mul(&attention_masks)
         .sum_axis(Axis(1))
-        .map(|n| n.max(f32::EPSILON))
-      ).into_dimensionality::<Ix2>()?;
+        .div(
+          attention_masks
+          .sum_axis(Axis(1))
+          .map(|n| n.max(f32::EPSILON))
+        ).into_dimensionality::<Ix2>()?;
     let sentence_embeddings_mean_pooled =
       sentence_embeddings_mean_pooled
-      .axis_iter(Axis(0))
-      .map(|array| array.to_owned());
+        .axis_iter(Axis(0))
+        .map(|array| array.to_owned());
     result.extend(sentence_embeddings_mean_pooled);
   }
   Ok(result)

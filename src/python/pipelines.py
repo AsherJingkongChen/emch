@@ -1,7 +1,7 @@
 from typing import Iterable
 import torch
 import json
-from tqdm import tqdm
+# from tqdm import tqdm
 from .utils.get_data_for_inference_semantic_search_on_scifact import (
   JSON_DATA_PATH,
   InferData,
@@ -46,7 +46,7 @@ def get_sentence_embedding_in_batch(
   batch_size: int,
 ) -> torch.Tensor:
   sentence_embedding_in_chunks: list[torch.Tensor] = []
-  for chunk_of_inputs in tqdm(iter_to_chunks(inputs, batch_size)):
+  for chunk_of_inputs in iter_to_chunks(inputs, batch_size): # tqdm
     sentence_embedding_in_chunks.append(
       get_sentence_embedding(chunk_of_inputs, model, tokenizer)
     )
@@ -71,16 +71,16 @@ def inference_semantic_search_on_scidata(
     corpus_embeddings = torch.cat([
       get_sentence_embedding(
         item['sentence'], model, tokenizer
-      ) for item in tqdm(corpus)
+      ) for item in corpus # tqdm
     ])
     query_embeddings = torch.cat([
       get_sentence_embedding(
         item['sentence'], model, tokenizer
-      ) for item in tqdm(queries)
+      ) for item in queries # tqdm
     ])
 
   hits = 0; total = len(queries)
-  for query_embedding, query in tqdm(zip(query_embeddings, queries)):
+  for query_embedding, query in zip(query_embeddings, queries): # tqdm
     hits += int(
       corpus[
         torch.cosine_similarity(

@@ -1,0 +1,23 @@
+0.4310189359783589
+python3.10 -m src.python.pytorch
+user:   188491ms or 188491427us
+kernel: 10054ms or 10054260us
+total:  108662ms or 108661979us
+cpu:    182%
+memory: 396180 KiB
+
+0.4328223624887286
+python3.10 -m src.python.ort
+user:   222566ms or 222566105us
+kernel: 7616ms or 7616380us
+total:  105439ms or 105438651us
+cpu:    218%
+memory: 422344 KiB
+
+0.43282238
+./target/release/ort
+user:   149488ms or 149488232us
+kernel: 3048ms or 3048443us
+total:  81105ms or 81105056us
+cpu:    188%
+memory: 173404 KiB
