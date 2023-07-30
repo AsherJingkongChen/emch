@@ -1,0 +1,6 @@
+/assets
+/target
+.vscode
+.cache
+*.pem
+__pycache__

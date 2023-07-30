@@ -1,0 +1,37 @@
+0.4328223624887286
+python3.10 -m src.python.pytorch
+total:  134301ms or 134300698us
+cpu:    186%
+memory: 396152 KiB
+
+0.4328223624887286
+python3.10 -m src.python.ort
+total:  115532ms or 115532065us
+cpu:    208%
+memory: 415156 KiB
+
+0.43282238
+./target/release/main
+total:  90071ms or 90071173us
+cpu:    183%
+memory: 173020 KiB
+
+0.43282238
+./target/release/main
+total:  85505ms or 85504730us
+cpu:    186%
+memory: 173644 KiB
+
+0.43282238
+./target/release/main
+total:  84749ms or 84749072us
+cpu:    185%
+memory: 173636 KiB
+
+0.43282238
+./target/release/ort
+user:   421048ms or 421047513us
+kernel: 3688ms or 3688241us
+total:  153732ms or 153732157us
+cpu:    276%
+memory: 174936 KiB
