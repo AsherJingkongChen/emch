@@ -1,4 +1,4 @@
-pub mod pipelines;
+mod pipelines;
 use crate::pipelines::inference_semantic_search_on_scidata;
 
 use ort::{
@@ -14,8 +14,8 @@ use tokenizers::{
 use std::env;
 // use kdam::tqdm;
 
-const MODEL_PATH: &str = "assets/sbert/all-MiniLM-L6-v2/onnx/model.onnx";
-const TOKENIZER_PATH: &str = "assets/sbert/all-MiniLM-L6-v2/onnx/tokenizer.json";
+const MODEL_PATH: &str = "assets/sbert/all-MiniLM-L6-v2/onnx_q/model_quantized.onnx";
+const TOKENIZER_PATH: &str = "assets/sbert/all-MiniLM-L6-v2/onnx_q/tokenizer.json";
 
 fn main() -> Result<(), tokenizers::Error> {
   let batch_size: i16 =

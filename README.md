@@ -1,4 +1,4 @@
-# Emch: Benchmark v2 GUIDE
+# Emch: Benchmark v3 GUIDE
 
 ## Sec 1. Environment
 Before we start, let's check out the status of my machine:
@@ -13,69 +13,50 @@ Darwin Kernel Version: 19.6.0
 ```
 Hardware Model: MacBookPro9,2
 Installed Memory Size: 8GB
-CPU name: Dual-Core Intel Core i5
-CPU frequency: 2.5GHz
-Physical CPU cores: 2
-Logical CPU cores: 4
+Processor name: Dual-Core Intel Core i5
+Processor speed: 2.5GHz
+Number of Physical CPU cores: 2
+Number of Logical CPU cores: 4
 ```
 
 ### Toolchain Information
 ```
-Python 3.10.6
+python 3.10.6
 rustc 1.70.0
 cargo 1.70.0
 zsh 5.7.1
 BSD time utility
 ```
 
-In this benchmark, I operate ML inference on Intel CPU with 2 cores only.
+In this benchmark, I have operated ML inference on this Intel CPU with 2 physical cores only.
 
 ## Sec 2. Targets
 I'd like to see how fast can a Sentence Trasformer model be.
-There is only one task: Semantic search on [BelR/scifact](https://huggingface.co/datasets/BeIR/scifact) dataset.
+
+There was only one task: Semantic search on [BelR/scifact](https://huggingface.co/datasets/BeIR/scifact) dataset with the BERT model `sentence-transformers/all-MiniLM-L6-v2`.
+
+Steps in the task:
 1. get all embeddings of queries (text) and corpus (title).
 2. compute cosine similarity for all pairs of queries and corpus.
 3. get the id of corpus with the highest similarity.
 4. if the id is contained in qrels (the answer), it hits.
-5. the score is `(hits / query total count)`
+5. the score is `(hits / number of queries)`
 
-I run the task with some similar approaches, and compare their total execution time, to find the fastest approach.
-The model name is `sentence-transformers/all-MiniLM-L6-v2`.
+I've run the task with some approaches, and compared their total execution time, to find the fastest approach.
+
 My approaches:
 1. Python-PyTorch: PyTorch model, run with Hugging Face's `optimum.bettertransformer` in Python
 2. Python-ORT: ONNX model, run with Hugging Face's `optimum.onnxruntime` in Python
 3. Rust-ORT: ONNX model, run with the crate `pykeio/ort` in Rust
+4. Python-ORT-Quantized: ONNX model with dynamic quantization, run with Hugging Face's `optimum.onnxruntime` in Python
+5. Rust-ORT-Quantized: ONNX model with dynamic quantization, run with the crate `pykeio/ort` in Rust
 
 ## Sec 3. Comparision
-Histogram:
-![Benchmark HTML Screenshot](./docs/imgs/benchmark-html.png)
+The performance was measured with BSD time utility, see this log file [here](./misc/benchmark-v3.log)
 
-Measured with BSD `time` utility:
-```log
-0.4310189359783589
-python3.10 -m src.python.pytorch
-user:   188491ms or 188491427us
-kernel: 10054ms or 10054260us
-total:  108662ms or 108661979us
-cpu:    182%
-memory: 396180 KiB
-
-0.4328223624887286
-python3.10 -m src.python.ort
-user:   222566ms or 222566105us
-kernel: 7616ms or 7616380us
-total:  105439ms or 105438651us
-cpu:    218%
-memory: 422344 KiB
-
-0.43282238
-./target/release/ort
-user:   149488ms or 149488232us
-kernel: 3048ms or 3048443us
-total:  81105ms or 81105056us
-cpu:    188%
-memory: 173404 KiB
-```
+The heatmaps in HTML is [here](./docs/benchmark-v3.html), and I've taken some screenshots of it:
+![Total Time (s)](./docs/imgs/benchmark-v3-1.png)
+![Maximum memory usage (MiB)](./docs/imgs/benchmark-v3-2.png)
 
 ## Sec 4. Steps to reproduce
 
@@ -85,9 +66,9 @@ memory: 173404 KiB
 pip install -r pipreqs.txt
 ```
 
-2. get models (in pt and onnx format):
+2. get models in PyTorch and convert to ONNX format (and quantized version with suffix `_q`):
 ```
-./scripts/download_transformer_in_pytorch_and_onnx.py
+./scripts/download_transformer_and_convert.py
 ```
 
 3. get Rust dependencies:
@@ -95,37 +76,51 @@ pip install -r pipreqs.txt
 cargo b -r
 ```
 
-All in one:
+**All in one:**
 ```
 pip install -r pipreqs.txt && \
-./scripts/download_transformer_in_pytorch_and_onnx.py && \
+./scripts/download_transformer_and_convert.py && \
 cargo b -r
 ```
 
 ### 2. Data conversion
-Covert the original `BelR/scifact` dataset ([Download here](https://public.ukp.informatik.tu-darmstadt.de/thakur/BEIR/datasets/scifact.zip)) to custom data format:
+You need to convert the original `BelR/scifact` dataset ([Download here](https://public.ukp.informatik.tu-darmstadt.de/thakur/BEIR/datasets/scifact.zip)) to custom data format:
 ```
 ./src/python/utils/get_data_for_inference_semantic_search_on_scifact.py
 ```
 
-### 3. Measuring execution time and see results
+### 3. Run the task
+Use the command after you have configured the program:
 ```
-time python3 -m src.python.pytorch && \
-time python3 -m src.python.ort && \
-cargo b -r && time ./target/release/ort
+SIZE_LIST=(1 2 4 8 16);
+for size in $SIZE_LIST; do
+  export BATCH_SIZE=$size;
+  echo $BATCH_SIZE;
+  time python3 -m src.python.pytorch;
+  time python3 -m src.python.ort;
+  time python3 -m src.python.ort_q;
+  cargo b -r --bin ort && time ./target/release/ort;
+  cargo b -r --bin ort_q && time ./target/release/ort_q;
+done
 ```
 
 ### 4. Batch size?
-In `src/python/pytorch.py`, `src/python/ort.py` and `src/rust/ort.rs`, a constant named `BATCH_SIZE` is for configuring batch size. The sentence count to execute in parallel. (probably)
-On my machine, this is the best setting now:
-Python PyTorch: 8
-Python ORT: 2
-Rust ORT: 2
+The environment variable named `BATCH_SIZE` is for configuring batch size in every testing scripts.
 
 ## Sec 5. Implementation details
 See `Cargo.toml`, `pipreqs.txt`, `src/`, `scripts/` and `tests/`
 
-## Sec 6. Are we fast yet?
+This is my BSD time utility's format (TIMEFMT environment variable):
+```
+%J
+user:   %mU or %uU
+kernel: %mS or %uS
+total:  %mE or %uE
+cpu:    %P
+memory: %M KiB
+```
+
+## Sec 6. Are we fast enough now?
 No, the benchmark is currently based on **naive** approaches. My Rust implementation has a lot to improve. I'd like to run more complex tasks. I'd like to make this benchmark more realistic, more useful and more surprise.
 
 *(The result vary on different machines)*

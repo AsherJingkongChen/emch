@@ -4,14 +4,16 @@ from transformers import AutoTokenizer
 from optimum.onnxruntime import ORTModelForFeatureExtraction
 from pathlib import Path
 from .pipelines import inference_semantic_search_on_scidata
+from os import getenv
 
+BATCH_SIZE = int(getenv('BATCH_SIZE'))
 MODEL_PATH = Path('assets/sbert/all-MiniLM-L6-v2/onnx')
-BATCH_SIZE = 2
-model = (
-  ORTModelForFeatureExtraction
+
+model = (ORTModelForFeatureExtraction
   .from_pretrained(MODEL_PATH)
-  .to('cpu')
-)
+  .to('cpu'))
 tokenizer = AutoTokenizer.from_pretrained(MODEL_PATH)
 
-print(inference_semantic_search_on_scidata(model, tokenizer, BATCH_SIZE))
+print(inference_semantic_search_on_scidata(
+  model, tokenizer, BATCH_SIZE
+))

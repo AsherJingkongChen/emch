@@ -21,3 +21,19 @@ kernel: 3048ms or 3048443us
 total:  81105ms or 81105056us
 cpu:    188%
 memory: 173404 KiB
+
+0.44454464
+./target/release/ort
+user:   166841ms or 166841082us
+kernel: 3142ms or 3142229us
+total:  90097ms or 90097285us
+cpu:    188%
+memory: 151264 KiB
+
+0.4409378
+./target/release/ort
+user:   181401ms or 181400875us
+kernel: 3749ms or 3748736us
+total:  104665ms or 104664694us
+cpu:    176%
+memory: 81492 KiB

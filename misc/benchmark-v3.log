@@ -1,0 +1,213 @@
+SIZE_LIST=(1 2 4 8 16);
+for size in $SIZE_LIST; do
+  export BATCH_SIZE=$size;
+  echo $BATCH_SIZE;
+  time python3 -m src.python.pytorch;
+  time python3 -m src.python.ort;
+  time python3 -m src.python.ort_q;
+  cargo b -r --bin ort && time ./target/release/ort;
+  cargo b -r --bin ort_q && time ./target/release/ort_q;
+done
+1
+/Library/Frameworks/Python.framework/Versions/3.10/lib/python3.10/site-packages/optimum/bettertransformer/models/encoder_models.py:247: UserWarning: The PyTorch API of nested tensors is in prototype stage and will change in the near future. (Triggered internally at /Users/runner/work/pytorch/pytorch/pytorch/aten/src/ATen/NestedTensorImpl.cpp:179.)
+  hidden_states = torch._nested_tensor_from_mask(hidden_states, ~attention_mask)
+0.4328223624887286
+python3.10 -m src.python.pytorch
+user:   298247ms or 298246898us
+kernel: 8011ms or 8011147us
+total:  164232ms or 164232130us
+cpu:    186%
+memory: 396264 KiB
+0.4328223624887286
+python3.10 -m src.python.ort
+user:   183265ms or 183265421us
+kernel: 5974ms or 5974378us
+total:  100024ms or 100023665us
+cpu:    189%
+memory: 410508 KiB
+0.43733092876465285
+python3.10 -m src.python.ort_q
+user:   188310ms or 188309801us
+kernel: 5409ms or 5408529us
+total:  101506ms or 101505975us
+cpu:    190%
+memory: 326676 KiB
+   Compiling emchat v0.0.0 (/Users/yilan/Documents/projects-web/emchat)
+    Finished release [optimized] target(s) in 25.62s
+0.43282238
+./target/release/ort
+user:   147340ms or 147340455us
+kernel: 1358ms or 1357975us
+total:  80301ms or 80300911us
+cpu:    185%
+memory: 173544 KiB
+    Finished release [optimized] target(s) in 0.67s
+0.43733093
+./target/release/ort_q
+user:   156773ms or 156773447us
+kernel: 1222ms or 1221604us
+total:  84736ms or 84736123us
+cpu:    186%
+memory: 80484 KiB
+2
+/Library/Frameworks/Python.framework/Versions/3.10/lib/python3.10/site-packages/optimum/bettertransformer/models/encoder_models.py:247: UserWarning: The PyTorch API of nested tensors is in prototype stage and will change in the near future. (Triggered internally at /Users/runner/work/pytorch/pytorch/pytorch/aten/src/ATen/NestedTensorImpl.cpp:179.)
+  hidden_states = torch._nested_tensor_from_mask(hidden_states, ~attention_mask)
+0.4328223624887286
+python3.10 -m src.python.pytorch
+user:   226552ms or 226552158us
+kernel: 9218ms or 9218266us
+total:  121493ms or 121493041us
+cpu:    194%
+memory: 396196 KiB
+0.4328223624887286
+python3.10 -m src.python.ort
+user:   224174ms or 224174152us
+kernel: 8260ms or 8259878us
+total:  106606ms or 106606452us
+cpu:    218%
+memory: 412912 KiB
+0.4409377817853922
+python3.10 -m src.python.ort_q
+user:   235029ms or 235028669us
+kernel: 7490ms or 7489649us
+total:  111386ms or 111385959us
+cpu:    217%
+memory: 329604 KiB
+    Finished release [optimized] target(s) in 0.74s
+0.43282238
+./target/release/ort
+user:   148813ms or 148813405us
+kernel: 3075ms or 3075353us
+total:  80329ms or 80329472us
+cpu:    189%
+memory: 173344 KiB
+    Finished release [optimized] target(s) in 0.32s
+0.4409378
+./target/release/ort_q
+user:   163069ms or 163069022us
+kernel: 2979ms or 2979101us
+total:  87200ms or 87200036us
+cpu:    190%
+memory: 81952 KiB
+4
+/Library/Frameworks/Python.framework/Versions/3.10/lib/python3.10/site-packages/optimum/bettertransformer/models/encoder_models.py:247: UserWarning: The PyTorch API of nested tensors is in prototype stage and will change in the near future. (Triggered internally at /Users/runner/work/pytorch/pytorch/pytorch/aten/src/ATen/NestedTensorImpl.cpp:179.)
+  hidden_states = torch._nested_tensor_from_mask(hidden_states, ~attention_mask)
+0.4328223624887286
+python3.10 -m src.python.pytorch
+user:   195566ms or 195565652us
+kernel: 7713ms or 7713433us
+total:  106363ms or 106363096us
+cpu:    191%
+memory: 396188 KiB
+0.4328223624887286
+python3.10 -m src.python.ort
+user:   386549ms or 386549019us
+kernel: 8577ms or 8577227us
+total:  144872ms or 144872193us
+cpu:    272%
+memory: 415684 KiB
+0.4436429215509468
+python3.10 -m src.python.ort_q
+user:   426021ms or 426021148us
+kernel: 10756ms or 10755529us
+total:  162806ms or 162806102us
+cpu:    268%
+memory: 333600 KiB
+    Finished release [optimized] target(s) in 1.04s
+0.43282238
+./target/release/ort
+user:   195000ms or 195000209us
+kernel: 3960ms or 3960355us
+total:  106504ms or 106503697us
+cpu:    186%
+memory: 174740 KiB
+    Finished release [optimized] target(s) in 0.39s
+0.4436429
+./target/release/ort_q
+user:   209746ms or 209746166us
+kernel: 3896ms or 3896441us
+total:  113581ms or 113580550us
+cpu:    188%
+memory: 85736 KiB
+8
+/Library/Frameworks/Python.framework/Versions/3.10/lib/python3.10/site-packages/optimum/bettertransformer/models/encoder_models.py:247: UserWarning: The PyTorch API of nested tensors is in prototype stage and will change in the near future. (Triggered internally at /Users/runner/work/pytorch/pytorch/pytorch/aten/src/ATen/NestedTensorImpl.cpp:179.)
+  hidden_states = torch._nested_tensor_from_mask(hidden_states, ~attention_mask)
+0.4310189359783589
+python3.10 -m src.python.pytorch
+user:   229642ms or 229642214us
+kernel: 15030ms or 15030033us
+total:  129748ms or 129748406us
+cpu:    188%
+memory: 396168 KiB
+0.4310189359783589
+python3.10 -m src.python.ort
+user:   453256ms or 453256363us
+kernel: 12645ms or 12645373us
+total:  176487ms or 176486545us
+cpu:    263%
+memory: 422072 KiB
+0.4436429215509468
+python3.10 -m src.python.ort_q
+user:   461138ms or 461138397us
+kernel: 12298ms or 12298019us
+total:  180516ms or 180516041us
+cpu:    262%
+memory: 344732 KiB
+    Finished release [optimized] target(s) in 1.00s
+0.43282238
+./target/release/ort
+user:   210913ms or 210912889us
+kernel: 4866ms or 4866127us
+total:  115840ms or 115839848us
+cpu:    186%
+memory: 178924 KiB
+    Finished release [optimized] target(s) in 0.41s
+0.44544634
+./target/release/ort_q
+user:   231980ms or 231980495us
+kernel: 4969ms or 4968521us
+total:  126090ms or 126089572us
+cpu:    187%
+memory: 101732 KiB
+16
+/Library/Frameworks/Python.framework/Versions/3.10/lib/python3.10/site-packages/optimum/bettertransformer/models/encoder_models.py:247: UserWarning: The PyTorch API of nested tensors is in prototype stage and will change in the near future. (Triggered internally at /Users/runner/work/pytorch/pytorch/pytorch/aten/src/ATen/NestedTensorImpl.cpp:179.)
+  hidden_states = torch._nested_tensor_from_mask(hidden_states, ~attention_mask)
+0.4310189359783589
+python3.10 -m src.python.pytorch
+user:   234592ms or 234591537us
+kernel: 31107ms or 31107011us
+total:  141483ms or 141483383us
+cpu:    187%
+memory: 396252 KiB
+0.4310189359783589
+python3.10 -m src.python.ort
+user:   380219ms or 380219203us
+kernel: 11850ms or 11849591us
+total:  169402ms or 169401667us
+cpu:    231%
+memory: 436540 KiB
+0.43462578899909826
+python3.10 -m src.python.ort_q
+user:   395560ms or 395559843us
+kernel: 11936ms or 11935750us
+total:  177429ms or 177428580us
+cpu:    229%
+memory: 375888 KiB
+    Finished release [optimized] target(s) in 1.17s
+0.43282238
+./target/release/ort
+user:   235832ms or 235832235us
+kernel: 6371ms or 6371418us
+total:  128580ms or 128580326us
+cpu:    188%
+memory: 197848 KiB
+    Finished release [optimized] target(s) in 0.39s
+0.4364292
+./target/release/ort_q
+user:   265654ms or 265654197us
+kernel: 6889ms or 6889407us
+total:  144382ms or 144381506us
+cpu:    188%
+memory: 136180 KiB
+
+batch_size, Python-PyTorch, Python-ORT, Python-ORT-Quantized, Rust-ORT, Rust-ORT-Quantized

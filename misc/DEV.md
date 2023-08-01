@@ -10,7 +10,7 @@ optimum-cli export onnx \
   assets/sbert/all-MiniLM-L6-v2/onnx/;
 ```
 ```
-./scripts/download_transformer_in_pytorch_and_onnx.py \
+./scripts/download_transformer_and_convert.py \
   sentence-transformers/all-MiniLM-L6-v2 \
   assets/sbert/all-MiniLM-L6-v2;
 ```
@@ -18,13 +18,6 @@ optimum-cli export onnx \
 export LIBTORCH=/path/to/libtorch;
 export ORT_LIB_LOCATION=/path/to/onnxruntime;
 export LD_LIBRARY_PATH="$LD_LIBRARY_PATH:$LIBTORCH/lib:$ORT_LIB_LOCATION/lib";
-```
-```
-scripts
-src/rust
-src/python
-tests/scifact
-assets/sbert/all-MiniLM-L6-v2
 ```
 ```
 BSD time utility

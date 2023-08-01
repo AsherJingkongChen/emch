@@ -217,9 +217,7 @@ where
   // intermediate sentence_embedding: (1, hidden_size)
   // final sentence_embedding: (hidden_size)
   fn convert_to_input(from: &[u32]) -> CowArray<'_, i64, Dim<IxDynImpl>> {
-    let cast_iter =
-      from.iter().map(|n: &u32| *n as i64);
-    let array = Array::from_iter(cast_iter);
+    let array = Array::from_iter(from.iter().map(|n: &u32| *n as i64));
     CowArray::from(array).insert_axis(Axis(0)).into_dyn()
   }
   let encoded_input = tokenizer.encode(input, true)?;
@@ -230,29 +228,30 @@ where
   ];
   let attention_mask =
     encoded_input[1]
-    .to_owned()
-    .insert_axis(Axis(2))
-    .map(|n| *n as f32);
+      .to_owned()
+      .insert_axis(Axis(2))
+      .map(|n| *n as f32);
   let encoded_input =
     encoded_input
-    .iter()
-    .filter_map(|array| {
-      Value::from_array(model.allocator(), array).ok()
-    }).collect::<Vec<_>>();
+      .iter()
+      .filter_map(|array| {
+        Value::from_array(model.allocator(), array).ok()
+      }).collect::<Vec<_>>();
   let token_embeddings =
     model
-    .run(encoded_input)?[0]
-    .try_extract()?;
+      .run(encoded_input)?[0]
+      .try_extract()?;
   let sentence_embedding_mean_pooled =
-    token_embeddings.view()
-    .mul(&attention_mask)
-    .sum_axis(Axis(1))
-    .div(
-      attention_mask
+    token_embeddings
+      .view()
+      .mul(&attention_mask)
       .sum_axis(Axis(1))
-      .map(|n| n.max(f32::EPSILON))
-    ).remove_axis(Axis(0))
-    .into_dimensionality::<Ix1>()?;
+      .div(
+        attention_mask
+        .sum_axis(Axis(1))
+        .map(|n| n.max(f32::EPSILON))
+      ).remove_axis(Axis(0))
+      .into_dimensionality::<Ix1>()?;
   Ok(sentence_embedding_mean_pooled)
 }
 

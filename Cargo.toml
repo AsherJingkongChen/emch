@@ -9,6 +9,10 @@ edition = "2021"
 name = "ort"
 path = "src/rust/ort.rs"
 
+[[bin]]
+name = "ort_q"
+path = "src/rust/ort_q.rs"
+
 [dependencies]
 serde = { version = "1.0.175", features = ["derive"] }
 serde_json = { version = "1.0.103" }
