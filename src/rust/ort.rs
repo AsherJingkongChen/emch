@@ -36,8 +36,9 @@ fn main() -> Result<(), tokenizers::Error> {
   let mut padding_params =
     tokenizer
       .get_padding_mut()
-      .ok_or("Expected padding parameters in the tokenizer")?;
+      .unwrap();
   padding_params.strategy = PaddingStrategy::BatchLongest;
+  let tokenizer = tokenizer;
 
   // eprintln!("{:?}", model);
 
@@ -48,51 +49,3 @@ fn main() -> Result<(), tokenizers::Error> {
   println!("{result}");
 	Ok(())
 }
-
-// use rust_bert::pipelines::sentence_embeddings::{
-//   SentenceEmbeddingsBuilder,
-//   SentenceEmbeddingsModelType,
-// };
-// fn cosine_similarity_from_vec(
-//   vec_1: Vec<f32>,
-//   vec_2: Vec<f32>,
-// ) -> f32 {
-//   cosine_similarity(
-//     &Array::<f32, Ix1>::from_vec(vec_1),
-//     &Array::<f32, Ix1>::from_vec(vec_2)
-//   )
-// }
-
-// let model =
-//   SentenceEmbeddingsBuilder::remote(
-//     SentenceEmbeddingsModelType::AllMiniLmL6V2
-//   ).with_device(tch::Device::Cpu)
-//   .create_model()?;
-// let mut corpus_embeddings = Vec::<Vec<f32>>::new();
-// let mut query_embeddings = Vec::<Vec<f32>>::new();
-// for chunk_of_corpus in corpus.chunks(BATCH_SIZE as usize) {
-//   corpus_embeddings.extend(
-//     model
-//     .encode(
-//       &chunk_of_corpus
-//       .iter()
-//       .map(|corpus| corpus.sentence.as_str())
-//       .collect::<Vec<_>>()
-//     )?
-//     .iter()
-//     .map(Vec::to_owned)
-//   );
-// }
-// for chunk_of_query in queries.chunks(BATCH_SIZE as usize) {
-//   query_embeddings.extend(
-//     model
-//     .encode(
-//       &chunk_of_query
-//       .iter()
-//       .map(|query| query.sentence.as_str())
-//       .collect::<Vec<_>>()
-//     )?
-//     .iter()
-//     .map(Vec::to_owned)
-//   );
-// }

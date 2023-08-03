@@ -36,9 +36,9 @@ fn main() -> Result<(), tokenizers::Error> {
   let mut padding_params =
     tokenizer
       .get_padding_mut()
-      .ok_or("Expected padding parameters in the tokenizer")?;
+      .unwrap();
   padding_params.strategy = PaddingStrategy::BatchLongest;
-
+  let tokenizer = tokenizer;
   // eprintln!("{:?}", model);
 
   let result = inference_semantic_search_on_scidata(
