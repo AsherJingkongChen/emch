@@ -40,12 +40,12 @@ fn main() -> Result<(), tokenizers::Error> {
   padding_params.strategy = PaddingStrategy::BatchLongest;
   let tokenizer = tokenizer;
 
-  // eprintln!("{:?}", model);
+  println!("{:#?}", tokenizer);
 
-  let result = inference_semantic_search_on_scidata(
-    &model, &tokenizer, batch_size,
-  )?;
+  // let result = inference_semantic_search_on_scidata(
+  //   &model, &tokenizer, batch_size,
+  // )?;
 
-  println!("{result}");
+  // println!("{result}");
 	Ok(())
 }

@@ -39,7 +39,6 @@ fn main() -> Result<(), tokenizers::Error> {
       .unwrap();
   padding_params.strategy = PaddingStrategy::BatchLongest;
   let tokenizer = tokenizer;
-  // eprintln!("{:?}", model);
 
   let result = inference_semantic_search_on_scidata(
     &model, &tokenizer, batch_size,

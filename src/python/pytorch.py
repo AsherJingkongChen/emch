@@ -1,6 +1,6 @@
 #! /usr/bin/env python3
 
-from transformers import AutoTokenizer, AutoModel, BertModel
+from transformers import AutoTokenizer, AutoModel, BertTokenizer
 from pathlib import Path
 from optimum.bettertransformer import BetterTransformer
 from .pipelines import inference_semantic_search_on_scidata

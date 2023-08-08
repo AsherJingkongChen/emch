@@ -4,5 +4,11 @@
 
 .vscode
 .cache
+onnx_q
+wasm
+
 *.env
+
+node_modules
+dist
 __pycache__

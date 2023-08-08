@@ -31,7 +31,10 @@ ndarray = { version = "0.15.6" }
 [dependencies.ort]
 version = "1.15.2"
 # default-features = false
-# features = ["load-dynamic"]
+features = [
+  "load-dynamic",
+  "minimal-build"
+]
 
 # [profile.release]
 # debug = true
