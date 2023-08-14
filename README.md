@@ -86,7 +86,7 @@ cargo b -r
 ### 2. Data conversion
 You need to convert the original `BelR/scifact` dataset ([Download here](https://public.ukp.informatik.tu-darmstadt.de/thakur/BEIR/datasets/scifact.zip)) to custom data format:
 ```
-./src/python/utils/get_data_for_inference_semantic_search_on_scifact.py
+./packages/python/utils/get_data_for_inference_semantic_search_on_scifact.py
 ```
 
 ### 3. Run the task
@@ -108,7 +108,7 @@ done
 The environment variable named `BATCH_SIZE` is for configuring batch size in every testing scripts.
 
 ## Sec 5. Implementation details
-See `Cargo.toml`, `pipreqs.txt`, `src/`, `scripts/` and `tests/`
+See `Cargo.toml`, `pipreqs.txt`, `packages/`, `scripts/` and `tests/`
 
 This is my BSD time utility's format (TIMEFMT environment variable):
 ```

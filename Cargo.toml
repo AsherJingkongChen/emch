@@ -7,11 +7,11 @@ edition = "2021"
 
 [[bin]]
 name = "ort"
-path = "src/rust/ort.rs"
+path = "packages/rust/ort.rs"
 
 [[bin]]
 name = "ort_q"
-path = "src/rust/ort_q.rs"
+path = "packages/rust/ort_q.rs"
 
 [dependencies]
 serde = { version = "1.0.175", features = ["derive"] }
