@@ -1,0 +1,11 @@
+{
+  "type": "module",
+  "scripts": {
+    "dev": "scripts/dev.sh"
+  },
+  "devDependencies": {
+    "cpx2": "^5.0.0",
+    "esbuild": "^0.18.19",
+    "http-server": "^14.1.1"
+  }
+}

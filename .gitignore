@@ -1,10 +1,10 @@
-/assets
-/target
-/tests/scifact/data
 /packages/web/public/onnx_q
 /packages/web/public/wasm
 
-.vscode
+artifacts
+pkg
+target
+.vscodes
 .cache
 
 *.env

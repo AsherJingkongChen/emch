@@ -1,3 +1,0 @@
-[submodule "qdrant"]
-	path = qdrant
-	url = git@github.com:qdrant/qdrant.git
