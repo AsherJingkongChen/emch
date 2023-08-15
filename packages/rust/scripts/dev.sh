@@ -1,3 +1,3 @@
 #! /usr/bin/env sh
 
-wasm-pack build --target web --dev
+wasm-pack build --dev --target=web --out-dir=dist/
