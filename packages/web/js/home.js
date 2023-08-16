@@ -8,8 +8,8 @@ const model_url = '../onnx/model_quantized.onnx';
 const model_config = {
   graphOptimizationLevel: 'all'
 };
-const model = await InferenceSession.create(model_url, model_config);
-console.log(model);
+// const model = await InferenceSession.create(model_url, model_config);
+// console.log(model);
 
 await initEmchWasm('../wasm/lib_bg.wasm');
 console.log(get_vocab_size());

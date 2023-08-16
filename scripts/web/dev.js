@@ -6,8 +6,9 @@ import chalk from 'chalk';
 import esbuild from 'esbuild';
 import { getReasonPhrase } from 'http-status-codes';
 import http from 'http';
+import os from 'os';
 
-/// Watch and copy ///
+/// Watch and copy files ///
 {
   const filesToWatch = [
     {
@@ -35,13 +36,13 @@ import http from 'http';
   }
 }
 
-/// Bundle JavaScript ///
+/// Bundle JavaScript and serve for development ///
 {
-  /// Development Service ///
   const devServerConfig = {
     url: {
       top: new URL('http://127.0.0.1:8863'),
       mid: new URL('http://127.0.0.1:9974'),
+      ext: new URL(`http://${getAllExternalIPv4()[0]}:8080`),
     },
   };
   const bundler = await esbuild.context({
@@ -51,16 +52,15 @@ import http from 'http';
     bundle: true,
   });
   await bundler.watch();
+
+  // Top service (internal)
   await bundler.serve({
     host: devServerConfig.url.top.hostname,
     port: parseInt(devServerConfig.url.top.port),
     servedir: './packages/web/dist/',
-    onRequest: devServerLogOnResponse,
   });
 
-  // const devServerAddress =
-  //   chalk.bold.underline(`http://${hostname}:${port}`);
-  // console.log(`Development server is at ${devServerAddress} now`);
+  // Mid service (middleware)
   http.createServer(
     { keepAliveTimeout: 60000 },
     interceptOnRequest.bind(null, devServerConfig.url.top),
@@ -68,17 +68,34 @@ import http from 'http';
     devServerConfig.url.mid.port,
     devServerConfig.url.mid.hostname,
   );
+
+  // Ext service (external)
+  http.createServer(
+    { keepAliveTimeout: 60000 },
+    interceptOnRequest.bind(null, devServerConfig.url.mid),
+  ).listen(
+    devServerConfig.url.ext.port,
+    devServerConfig.url.ext.hostname,
+  );
+
+  const devServerAddressInternal =
+    chalk.bold(devServerConfig.url.mid.href);
+  const devServerAddressExternal =
+    chalk.bold(devServerConfig.url.ext.href);
+  console.log(`Development server is at ${devServerAddressInternal} now`);
+  console.log(`Development server is at ${devServerAddressExternal} now`);
 }
 
 function interceptOnRequest(targetBaseUrl, request, response) {
   const targetUrl = new URL(targetBaseUrl);
-  const { url: pathname } = request;
-  if (pathname === '/') {
+  const { url: path } = request;
+  if (path === '/') {
     response.writeHead(301, { Location: '/html/' });
     response.end();
-    return false;
+    return;
+  } else {
+    targetUrl.pathname = path;
   }
-  targetUrl.pathname = pathname;
 
   const interRequest = http.request(
     targetUrl,
@@ -89,9 +106,8 @@ function interceptOnRequest(targetBaseUrl, request, response) {
 }
 
 function interceptOnResponse(response, interResponse) {
-  const { statusCode, headers } = interResponse;
-  response.writeHead(statusCode, headers);
-
+  const { statusCode: status, headers } = interResponse;
+  response.writeHead(status, headers);
   interResponse.pipe(response, { end: true });
 }
 // import { execSync, spawnSync } from 'child_process';
@@ -141,4 +157,13 @@ function devServerLogOnResponse({
   console.log(`\
 ${methodText} ${pathText} => \
 ${statusText} ${statusReasonText}`);
+}
+
+function getAllExternalIPv4() {
+  return Object
+    .values(os.networkInterfaces())
+    .flat()
+    .filter(({ internal, family }) => (
+      !internal && family === 'IPv4'
+    )).map(({ address }) => address);
 }
