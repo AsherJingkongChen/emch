@@ -1,12 +1,11 @@
 #! /usr/bin/env node --experimental-modules
 
 import cpx from 'cpx2';
-import path from 'path';
 import chalk from 'chalk';
 import esbuild from 'esbuild';
-import { getReasonPhrase } from 'http-status-codes';
 import http from 'http';
 import os from 'os';
+import httpProxy from 'http-proxy';
 
 /// Watch and copy files ///
 {
@@ -38,10 +37,11 @@ import os from 'os';
 
 /// Bundle JavaScript and serve for development ///
 {
+  // all IPv4 addresses are at private networks
   const devServerConfig = {
     url: {
-      top: new URL('http://127.0.0.1:8863'),
-      mid: new URL('http://127.0.0.1:9974'),
+      top: new URL('http://127.0.0.1:9901'),
+      mid: new URL('http://127.0.0.1:8901'),
       ext: new URL(`http://${getAllExternalIPv4()[0]}:8080`),
     },
   };
@@ -61,22 +61,44 @@ import os from 'os';
   });
 
   // Mid service (middleware)
-  http.createServer(
-    { keepAliveTimeout: 60000 },
-    interceptOnRequest.bind(null, devServerConfig.url.top),
-  ).listen(
-    devServerConfig.url.mid.port,
-    devServerConfig.url.mid.hostname,
-  );
+  const proxyServer = httpProxy.createProxyServer({
+    target: devServerConfig.url.top,
+    keepAliveTimeout: 60000,
+  }).listen(
+    devServerConfig.url.mid.port
+  ).on('proxyReq', (proxyRequest, request, response) => {
+    const { host, path, method } = proxyRequest;
+    if (path === '/') {
+      response.writeHead(301, { Location: '/html/' });
+      const { statusCode, statusMessage } = response;
+      devServerLog({
+        host,
+        path,
+        method,
+        statusCode,
+        statusMessage,
+      });
+      return;
+    }
+  }).on('proxyRes', (proxyResponse, request, response) => {
+    const { url: path, headers: { host }, method } = request;
+    const { statusCode, statusMessage } = proxyResponse;
+    devServerLog({
+      host,
+      path,
+      method,
+      statusCode,
+      statusMessage,
+    });
+  });
 
   // Ext service (external)
-  http.createServer(
-    { keepAliveTimeout: 60000 },
-    interceptOnRequest.bind(null, devServerConfig.url.mid),
-  ).listen(
+  http.createServer({
+    keepAliveTimeout: 60000,
+  }).listen(
     devServerConfig.url.ext.port,
     devServerConfig.url.ext.hostname,
-  );
+  ).on('request', proxyServer.web.bind(proxyServer));
 
   const devServerAddressInternal =
     chalk.bold(devServerConfig.url.mid.href);
@@ -85,40 +107,6 @@ import os from 'os';
   console.log(`Development server is at ${devServerAddressInternal} now`);
   console.log(`Development server is at ${devServerAddressExternal} now`);
 }
-
-function interceptOnRequest(targetBaseUrl, request, response) {
-  const targetUrl = new URL(targetBaseUrl);
-  const { url: path } = request;
-  if (path === '/') {
-    response.writeHead(301, { Location: '/html/' });
-    response.end();
-    return;
-  } else {
-    targetUrl.pathname = path;
-  }
-
-  const interRequest = http.request(
-    targetUrl,
-    request,
-    interceptOnResponse.bind(null, response),
-  );
-  request.pipe(interRequest, { end: true });
-}
-
-function interceptOnResponse(response, interResponse) {
-  const { statusCode: status, headers } = interResponse;
-  response.writeHead(status, headers);
-  interResponse.pipe(response, { end: true });
-}
-// import { execSync, spawnSync } from 'child_process';
-// import { chdir, cwd } from 'process';
-
-// ***** IMPORTANT
-// { // link wasm-pack bundle to npm
-//   chdir('./packages/web/');
-//   execSync('pnpm link ../rust/dist', { stdio: 'inherit' });
-//   chdir('../../');
-// }
 
 function watchFiles(source, outputDir) {
   return new Promise((resolve, reject) => {
@@ -136,27 +124,30 @@ function watchFiles(source, outputDir) {
   });
 }
 
-function devServerLogOnResponse({
-  method,
+function devServerLog({
+  protocol,
+  host,
   path,
-  status,
+  method,
+  statusCode,
+  statusMessage,
 }) {
+  protocol = protocol || 'http:';
   const methodText = method;
-  const pathText = chalk.gray(path);
-  const clampedStatus = Math.trunc(status / 100) * 100;
+  const urlText = chalk.gray(`${protocol}//${host}${path}`);
+  const clampedStatusCode = Math.trunc(statusCode / 100) * 100;
   const statusPainter = ({
     100: chalk.cyanBright,
     200: chalk.green,
     300: chalk.yellow,
     400: chalk.red,
     500: chalk.magenta,
-  }[clampedStatus]);
-  const statusText = statusPainter(status);
-  const statusReason = getReasonPhrase(status);
-  const statusReasonText = statusPainter(statusReason);
+  }[clampedStatusCode]);
+  const statusCodeText = statusPainter(statusCode);
+  const statusMessageText = statusPainter(statusMessage);
   console.log(`\
-${methodText} ${pathText} => \
-${statusText} ${statusReasonText}`);
+${methodText} ${urlText} => \
+${statusCodeText} ${statusMessageText}`);
 }
 
 function getAllExternalIPv4() {

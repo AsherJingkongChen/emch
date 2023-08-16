@@ -1,5 +1,6 @@
 .vscodes
 .cache
+.DS_Store
 
 artifacts
 dist
