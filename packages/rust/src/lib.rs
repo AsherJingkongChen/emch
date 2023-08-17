@@ -27,21 +27,66 @@
 //   }
 // }
 use wasm_bindgen::prelude::*;
-use tokenizers::Tokenizer;
 use std::str::FromStr;
-use js_sys::JsString;
+
+// #[wasm_bindgen]
+// pub fn get_vocab_size() -> Result<usize, String> {
+//   let a = tokenizers::Tokenizer::from_str(
+//     include_str!("../../../artifacts/sentence-transformers_all-MiniLM-L6-v2/onnx/tokenizer.json")
+//   ).map_err(|e| e.to_string())?;
+
+//   Ok(a.get_vocab_size(true))
+// }
 
 #[wasm_bindgen]
-pub fn get_vocab_size() -> Result<usize, JsString> {
-  let a = Tokenizer::from_str(
-    include_str!("../../../artifacts/sentence-transformers_all-MiniLM-L6-v2/onnx/tokenizer.json")
-  ).map_err(|e| JsString::from(format!("{e}")))?;
-
-  Ok(a.get_vocab_size(true))
+pub struct Tokenizer {
+  inner: tokenizers::Tokenizer,
 }
 
 #[wasm_bindgen]
-pub fn addd(a: u32, b: u32) -> u32 {
-  let result = a + b;
-  result
+impl Tokenizer {
+  #[wasm_bindgen(constructor)]
+  pub fn from_string(json_string: &str) -> Result<Tokenizer, String> {
+    Ok(Tokenizer {
+      inner: tokenizers::Tokenizer
+        ::from_str(json_string)
+        .map_err(|e| e.to_string())?
+    })
+  }
+
+  #[wasm_bindgen]
+  pub fn encode_string(
+    &self,
+    input_string: &str,
+    add_special_tokens: Option<bool>,
+  ) -> Result<Encoding, String> {
+    Ok(Encoding {
+      inner: self.inner
+        .encode(input_string, add_special_tokens.unwrap_or(true))
+        .map_err(|e| e.to_string())?
+    })
+  }
+}
+
+#[wasm_bindgen]
+pub struct Encoding {
+  inner: tokenizers::Encoding,
+}
+
+#[wasm_bindgen]
+impl Encoding {
+  #[wasm_bindgen(getter)]
+  pub fn input_ids(&self) -> Box<[u32]> {
+    Box::from(self.inner.get_ids())
+  }
+
+  #[wasm_bindgen(getter)]
+  pub fn attention_mask(&self) -> Box<[u32]> {
+    Box::from(self.inner.get_attention_mask())
+  }
+
+  #[wasm_bindgen(getter)]
+  pub fn token_type_ids(&self) -> Box<[u32]> {
+    Box::from(self.inner.get_type_ids())
+  }
 }

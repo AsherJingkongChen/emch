@@ -19,6 +19,6 @@ version = "0.2.10"
 features = ["js"]
 
 [dependencies.tokenizers]
-version = "0.13.3"
+version = "0.13.4"
 default-features = false
 features = ["unstable_wasm"]

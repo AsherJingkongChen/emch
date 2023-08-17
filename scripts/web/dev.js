@@ -21,6 +21,9 @@ import httpProxy from 'http-proxy';
       target: './packages/web/dist/favicons/',
     }, {
       source: './artifacts/sentence-transformers_all-MiniLM-L6-v2/onnx_q/**/*',
+      target: './packages/web/onnx/',
+    }, {
+      source: './packages/web/onnx/**/*',
       target: './packages/web/dist/onnx/',
     }, {
       source: './packages/web/node_modules/onnxruntime-web/dist/ort-wasm-simd.wasm',

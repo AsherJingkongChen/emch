@@ -8,6 +8,7 @@
     "cpx2": "^5.0.0",
     "esbuild": "^0.18.19",
     "http-proxy": "^1.18.1",
-    "http-status-codes": "^2.2.0"
+    "http-status-codes": "^2.2.0",
+    "wasm-opt": "^1.4.0"
   }
 }
