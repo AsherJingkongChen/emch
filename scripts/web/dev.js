@@ -29,7 +29,7 @@ import httpProxy from 'http-proxy';
       source: './packages/web/node_modules/onnxruntime-web/dist/ort-wasm-simd.wasm',
       target: './packages/web/dist/wasm/',
     }, {
-      source: './packages/web/node_modules/emch-wasm/lib_bg.wasm',
+      source: './packages/web/node_modules/emch-wasm/core_bg.wasm',
       target: './packages/web/dist/wasm/',
     },
   ];
