@@ -13,6 +13,7 @@ crate-type = ["cdylib"]
 [dependencies]
 wasm-bindgen = { version = "0.2.87" }
 js-sys = { version = "0.3.64" }
+ndarray = { version = "0.15.6" }
 
 [dependencies.getrandom]
 version = "0.2.10"
