@@ -57,6 +57,9 @@ def inference_semantic_search_on_scidata(
   tokenizer,
   batch_size: int,
 ) -> float:
+  # embedding = get_sentence_embedding('The IDs are the main input to a Language Model. They are the token indices, the numerical representations that a LM understands.', model, tokenizer)
+  # print([float(f'{i:.6f}') for i in embedding[0]])
+  # exit(0)
   infer_data: InferData = json.load(open(JSON_DATA_PATH, 'r'))
   corpus = infer_data['corpus']
   queries = infer_data['queries']

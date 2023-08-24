@@ -12,7 +12,7 @@ QREL_PATHS = [ASSETS_PATH / path for path in [
   'qrels/test.tsv', 'qrels/train.tsv'
 ]]
 
-DATA_PATH = ASSETS_PATH / '../data'
+DATA_PATH = ASSETS_PATH / '../artifacts'
 JSON_DATA_PATH = DATA_PATH / 'inference_semantic_search_on_scifact.json'
 
 class Corpus(TypedDict):

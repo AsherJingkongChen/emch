@@ -61,7 +61,7 @@ def download_transformer(
 
 # ./scripts/download_transformer_and_convert.py \
 #   sentence-transformers/all-MiniLM-L6-v2 \
-#   assets/sbert/all-MiniLM-L6-v2;
+#   artifacts/sentence-transformers_all-MiniLM-L6-v2;
 if __name__ == '__main__':
   if len(argv) > 1:
     model_id = argv[1]
@@ -70,7 +70,7 @@ if __name__ == '__main__':
   if len(argv) > 2:
     models_path = Path(argv[2])
   else:
-    models_path = Path('assets/sbert/all-MiniLM-L6-v2')
+    models_path = Path('artifacts/sentence-transformers_all-MiniLM-L6-v2')
 
   download_transformer(
     model_id,
