@@ -1,8 +1,12 @@
 /assets
-/target
 /tests/scifact/data
 
 .vscode
 .cache
 *.env
 __pycache__
+
+artifacts
+dist
+node_modules
+target
