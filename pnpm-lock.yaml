@@ -16,6 +16,9 @@ devDependencies:
   http-status-codes:
     specifier: ^2.2.0
     version: 2.2.0
+  typescript:
+    specifier: ^5.2.2
+    version: 5.2.2
   wasm-opt:
     specifier: ^1.4.0
     version: 1.4.0
@@ -589,6 +592,12 @@ packages:
 
   /tr46@0.0.3:
     resolution: {integrity: sha512-N3WMsuqV66lT30CrXNbEjx4GEwlow3v6rr4mCcv6prnfwhS01rkgyFdjPNBYd9br7LpXV1+Emh01fHnq2Gdgrw==}
+    dev: true
+
+  /typescript@5.2.2:
+    resolution: {integrity: sha512-mI4WrpHsbCIcwT9cF4FZvr80QUeKvsUsUvKDoR+X/7XHQH98xYD8YHZg7ANtz2GtZt/CBq2QJ0thkGJMHfqc1w==}
+    engines: {node: '>=14.17'}
+    hasBin: true
     dev: true
 
   /universalify@2.0.0:

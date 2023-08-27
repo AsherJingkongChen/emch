@@ -26,10 +26,10 @@ import httpProxy from 'http-proxy';
       source: './packages/web/onnx/**/*',
       target: './packages/web/dist/onnx/',
     }, {
-      source: './packages/web/node_modules/onnxruntime-web/dist/ort-wasm-simd.wasm',
+      source: './packages/web/node_modules/onnxruntime-web/dist/*.wasm',
       target: './packages/web/dist/wasm/',
     }, {
-      source: './packages/web/node_modules/emch-wasm/core_bg.wasm',
+      source: './packages/web/node_modules/emch-wasm/*.wasm',
       target: './packages/web/dist/wasm/',
     },
   ];
@@ -49,7 +49,7 @@ import httpProxy from 'http-proxy';
     },
   };
   const bundler = await esbuild.context({
-    entryPoints: ['./packages/web/js/home.js'],
+    entryPoints: ['./packages/web/js/home.ts'],
     outdir: './packages/web/dist/js/',
     format: 'esm',
     bundle: true,

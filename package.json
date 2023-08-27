@@ -9,6 +9,7 @@
     "esbuild": "^0.18.19",
     "http-proxy": "^1.18.1",
     "http-status-codes": "^2.2.0",
+    "typescript": "^5.2.2",
     "wasm-opt": "^1.4.0"
   }
 }

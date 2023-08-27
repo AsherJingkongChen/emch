@@ -2,12 +2,15 @@
 name = "emch-wasm"
 version = "0.0.0"
 edition = "2021"
+description = "Chat with embeddings locally in Web Assembly"
+license = "MIT"
+repository = "https://github.com/AsherJingkongChen/emch.git"
 
 # See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
 
 [lib]
-name = "core"
-path = "src/core.rs"
+name = "emch"
+path = "src/emch.rs"
 crate-type = ["cdylib"]
 
 [dependencies]
