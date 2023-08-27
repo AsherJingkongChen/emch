@@ -1,9 +1,20 @@
 {
+  "name": "emch",
+  "version": "0.0.0",
+  "license": "MIT",
+  "description": "Chat with embeddings locally",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/AsherJingkongChen/emch.git"
+  },
   "type": "module",
+  "packageManager": "pnpm@8.5.0",
   "scripts": {
-    "dev": "scripts/dev.sh"
+    "rust-dev": "./scripts/rust/dev.sh",
+    "web-dev": "./scripts/web/dev.js"
   },
   "devDependencies": {
+    "@types/node": "^20.5.6",
     "chalk": "^5.3.0",
     "cpx2": "^5.0.0",
     "esbuild": "^0.18.19",

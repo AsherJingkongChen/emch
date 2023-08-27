@@ -11,17 +11,14 @@ import httpProxy from 'http-proxy';
 {
   const filesToWatch = [
     {
-      source: './packages/web/html/**/*',
-      target: './packages/web/dist/html/',
-    }, {
       source: './packages/web/css/**/*',
       target: './packages/web/dist/css/',
     }, {
       source: './packages/web/favicons/**/*',
       target: './packages/web/dist/favicons/',
     }, {
-      source: './artifacts/sentence-transformers_all-MiniLM-L6-v2/onnx_q/**/*',
-      target: './packages/web/onnx/',
+      source: './packages/web/html/**/*',
+      target: './packages/web/dist/html/',
     }, {
       source: './packages/web/onnx/**/*',
       target: './packages/web/dist/onnx/',
@@ -34,7 +31,7 @@ import httpProxy from 'http-proxy';
     },
   ];
   for (const { source, target } of filesToWatch) {
-    await watchFiles(source, target);
+    await watchAndCopyFiles(source, target);
   }
 }
 
@@ -49,7 +46,7 @@ import httpProxy from 'http-proxy';
     },
   };
   const bundler = await esbuild.context({
-    entryPoints: ['./packages/web/js/home.ts'],
+    entryPoints: ['./packages/web/ts/home.ts'],
     outdir: './packages/web/dist/js/',
     format: 'esm',
     bundle: true,
@@ -111,7 +108,7 @@ import httpProxy from 'http-proxy';
   console.log(`Development server is at ${devServerAddressExternal} now`);
 }
 
-function watchFiles(source, outputDir) {
+function watchAndCopyFiles(source, outputDir) {
   return new Promise((resolve, reject) => {
     cpx.watch(source, outputDir, { dereference: true })
       .on('watch-error', function logOnError(err) {
