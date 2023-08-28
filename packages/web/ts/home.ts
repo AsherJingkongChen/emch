@@ -1,4 +1,4 @@
-import { SentenceBertModel } from './SentenceBertModel';
+import { BertModel } from './BertModel';
 
 /// tokenizer ///
 const tokenizerOptions = await fetch(
@@ -20,7 +20,7 @@ const sentences = [
   'var banner_path;',
   'function ban(path);'
 ];
-const model = await SentenceBertModel.create({
+const model = await BertModel.create({
   modelURI: '../onnx/model_quantized.onnx',
   modelOptions: {
     graphOptimizationLevel: 'all',
@@ -31,14 +31,14 @@ const model = await SentenceBertModel.create({
 });
 console.log({ model });
 
-const embeddings = await model.getEmbeddings(sentences);
-console.log({ embeddings });
+const sembeddings = await model.getSentenceEmbeddings(sentences);
+console.log({ sembeddings });
 
-for (let i = 0; i < embeddings.length; i++) {
-  for (let j = i + 1; j < embeddings.length; j++) {
-    const cosine_sim = SentenceBertModel.cosineSimilarity(
-      embeddings[i],
-      embeddings[j],
+for (let i = 0; i < sembeddings.length; i++) {
+  for (let j = i + 1; j < sembeddings.length; j++) {
+    const cosine_sim = BertModel.cosineSimilarity(
+      sembeddings[i],
+      sembeddings[j],
     );
     console.log({
       sentences: [sentences[i], sentences[j]],

@@ -5,19 +5,20 @@ import {
 } from 'onnxruntime-web';
 import emchInit, {
   InitInput as EmchInitInput,
+  Metric,
   Tokenizer,
-  Emch,
+  Task,
 } from 'emch-rs';
 
-export class SentenceBertModel {
+export class BertModel {
   static async create({
     modelURI,
     modelOptions,
     tokenizerOptions,
     ortWasmDir,
     emchWasmSource,
-  }: SentenceBertModel.CreateOptions
-  ): Promise<SentenceBertModel> {
+  }: BertModel.CreateOptions
+  ): Promise<BertModel> {
     OrtEnv.wasm.wasmPaths = ortWasmDir;
     await emchInit(emchWasmSource);
 
@@ -26,7 +27,7 @@ export class SentenceBertModel {
 
     console.assert(this.isModelFieldsValid(model));
 
-    return new SentenceBertModel({
+    return new BertModel({
       model,
       tokenizer,
     });
@@ -40,7 +41,7 @@ export class SentenceBertModel {
     this.free = undefined as any;
   }
 
-  async getEmbeddings(
+  async getSentenceEmbeddings(
     inputSentences: string[],
   ): Promise<Float32Array[]> {
     const encoding = this.tokenizer.encode_strings(inputSentences, true);
@@ -61,7 +62,7 @@ export class SentenceBertModel {
         dims: { 2: hidden_size },
       },
     } = await this.model.run(model_input);
-    return Emch.get_sentence_embeddings(
+    return Task.get_sentence_embeddings(
       last_hidden_state as Float32Array,
       attention_mask,
       batch_size,
@@ -74,7 +75,7 @@ export class SentenceBertModel {
     embedding_0: Float32Array,
     embedding_1: Float32Array,
   ): number {
-    return Emch.cosine_similarity(embedding_0, embedding_1);
+    return Metric.cosine_similarity(embedding_0, embedding_1);
   }
 
   /// private fields ///
@@ -106,7 +107,7 @@ export class SentenceBertModel {
   }
 }
 
-export declare namespace SentenceBertModel {
+export declare namespace BertModel {
   interface CreateOptions {
     modelURI: string;
     modelOptions?: InferenceSession.SessionOptions;
@@ -116,4 +117,4 @@ export declare namespace SentenceBertModel {
   }
 }
 
-export default SentenceBertModel;
+export default BertModel;

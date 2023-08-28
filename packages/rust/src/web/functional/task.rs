@@ -1,31 +1,21 @@
-#[path = "./tokenizers/encoding.rs"]
-pub mod encoding;
-
-#[path = "./tokenizers/tokenizer.rs"]
-pub mod tokenizer;
-
 use std::ops::{Mul, Div};
 use wasm_bindgen::prelude::*;
-use js_sys::{
-  Float32Array as JsFloat32Array,
-  BigInt64Array as JsBigInt64Array,
-};
+use js_sys::Float32Array as JsFloat32Array;
 use ndarray::{
   Array,
   Axis,
   Ix2,
-  Ix3, Ix1,
+  Ix3,
 };
 
 #[wasm_bindgen]
-pub struct Emch;
+pub struct Task;
 
 #[wasm_bindgen]
-impl Emch {
-  #[wasm_bindgen]
+impl Task {
   pub fn get_sentence_embeddings(
-    last_hidden_state: &JsFloat32Array,
-    attention_mask: &JsBigInt64Array,
+    last_hidden_state: &[f32],
+    attention_mask: &[i64],
     batch_size: usize,
     sequence_size: usize,
     hidden_size: usize,
@@ -59,25 +49,5 @@ impl Emch {
           )
         }).collect::<Box<[JsFloat32Array]>>()
     )
-  }
-
-  #[wasm_bindgen]
-  pub fn cosine_similarity(
-    embedding_0: &JsFloat32Array,
-    embedding_1: &JsFloat32Array,
-  ) -> f32 {
-    let vecs = (
-      Array::<f32, Ix1>::from(embedding_0.to_vec()),
-      Array::<f32, Ix1>::from(embedding_1.to_vec()),
-    );
-    let norms = (
-      f32::sqrt(vecs.0.dot(&vecs.0)).max(f32::EPSILON),
-      f32::sqrt(vecs.1.dot(&vecs.1)).max(f32::EPSILON),
-    );
-    let normed_vecs = (
-      vecs.0.div(norms.0),
-      vecs.1.div(norms.1),
-    );
-    normed_vecs.0.dot(&normed_vecs.1)
   }
 }

@@ -5,7 +5,7 @@ use js_sys::{
   Object as JsObject,
 };
 use std::str::FromStr;
-use crate::encoding::Encoding;
+use crate::tokenizers::encoding::Encoding;
 
 #[wasm_bindgen]
 pub struct Tokenizer {

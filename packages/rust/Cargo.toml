@@ -9,7 +9,7 @@ repository = "https://github.com/AsherJingkongChen/emch.git"
 # See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
 
 [lib]
-path = "src/web/emch.rs"
+path = "src/web/lib.rs"
 crate-type = ["cdylib"]
 
 [dependencies]
