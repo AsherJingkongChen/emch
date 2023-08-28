@@ -26,7 +26,7 @@ import httpProxy from 'http-proxy';
       source: './packages/web/node_modules/onnxruntime-web/dist/*.wasm',
       target: './packages/web/dist/wasm/',
     }, {
-      source: './packages/web/node_modules/emch-wasm/*.wasm',
+      source: './packages/web/node_modules/emch-rs/*.wasm',
       target: './packages/web/dist/wasm/',
     },
   ];
@@ -42,7 +42,7 @@ import httpProxy from 'http-proxy';
     url: {
       top: new URL('http://127.0.0.1:9901'),
       mid: new URL('http://127.0.0.1:8901'),
-      ext: new URL(`http://${getAllExternalIPv4()[0]}:8080`),
+      ext: new URL(`http://${getExtIPv4s()[0] ?? '127.0.0.1'}:8080`),
     },
   };
   const bundler = await esbuild.context({
@@ -150,7 +150,7 @@ ${methodText} ${urlText} => \
 ${statusCodeText} ${statusMessageText}`);
 }
 
-function getAllExternalIPv4() {
+function getExtIPv4s() {
   return Object
     .values(os.networkInterfaces())
     .flat()

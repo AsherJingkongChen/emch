@@ -1,6 +1,9 @@
 lockfileVersion: '6.0'
 
 devDependencies:
+  emch-rs:
+    specifier: ^0.0.0
+    version: link:../rust/target/web
   emch-wasm:
     specifier: ^0.0.0
     version: link:../rust/dist

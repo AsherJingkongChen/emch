@@ -6,8 +6,8 @@ import {
 import emchInit, {
   InitInput as EmchInitInput,
   Tokenizer,
-  get_sentence_embeddings,
-} from 'emch-wasm';
+  Emch,
+} from 'emch-rs';
 
 export class SentenceBertModel {
   static async create({
@@ -43,23 +43,17 @@ export class SentenceBertModel {
   async getEmbeddings(
     inputSentences: string[],
   ): Promise<Float32Array[]> {
-    const encoding =
-      this.tokenizer.encode_strings(inputSentences, true);
-    const {
-      input_ids_i64,
-      attention_mask_i64,
-      attention_mask_f32,
-      token_type_ids_i64,
-    } = encoding;
+    const encoding = this.tokenizer.encode_strings(inputSentences, true);
+    const { input_ids, attention_mask, token_type_ids } = encoding;
     encoding.free();
     const { length: batch_size } = inputSentences;
-    const { length: total_size } = input_ids_i64;
+    const { length: total_size } = input_ids;
     const sequence_size = total_size / batch_size;
     const dimensions = [batch_size, sequence_size];
     const model_input = {
-      input_ids: new Tensor(input_ids_i64, dimensions),
-      attention_mask: new Tensor(attention_mask_i64, dimensions),
-      token_type_ids: new Tensor(token_type_ids_i64, dimensions),
+      input_ids: new Tensor(input_ids, dimensions),
+      attention_mask: new Tensor(attention_mask, dimensions),
+      token_type_ids: new Tensor(token_type_ids, dimensions),
     };
     const {
       last_hidden_state: {
@@ -67,13 +61,20 @@ export class SentenceBertModel {
         dims: { 2: hidden_size },
       },
     } = await this.model.run(model_input);
-    return get_sentence_embeddings(
+    return Emch.get_sentence_embeddings(
       last_hidden_state as Float32Array,
-      attention_mask_f32,
+      attention_mask,
       batch_size,
       sequence_size,
       hidden_size,
     );
+  }
+
+  static cosineSimilarity(
+    embedding_0: Float32Array,
+    embedding_1: Float32Array,
+  ): number {
+    return Emch.cosine_similarity(embedding_0, embedding_1);
   }
 
   /// private fields ///

@@ -16,9 +16,9 @@ tokenizerOptions.padding.strategy = {
 console.log({ tokenizerOptions });
 
 const sentences = [
-  'The IDs are the main input to a Language Model.',
-  'They are the token indices.',
-  'The numerical representations that a LM understands.'
+  'const banner = "I\'m a banner";',
+  'var banner_path;',
+  'function ban(path);'
 ];
 const model = await SentenceBertModel.create({
   modelURI: '../onnx/model_quantized.onnx',
@@ -27,9 +27,22 @@ const model = await SentenceBertModel.create({
   },
   tokenizerOptions,
   ortWasmDir: '../wasm/',
-  emchWasmSource: '../wasm/emch_bg.wasm',
+  emchWasmSource: '../wasm/emch_rs_bg.wasm',
 });
 console.log({ model });
 
 const embeddings = await model.getEmbeddings(sentences);
 console.log({ embeddings });
+
+for (let i = 0; i < embeddings.length; i++) {
+  for (let j = i + 1; j < embeddings.length; j++) {
+    const cosine_sim = SentenceBertModel.cosineSimilarity(
+      embeddings[i],
+      embeddings[j],
+    );
+    console.log({
+      sentences: [sentences[i], sentences[j]],
+      cosine_sim,
+    });
+  }
+}

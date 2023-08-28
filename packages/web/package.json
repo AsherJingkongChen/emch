@@ -1,7 +1,7 @@
 {
   "type": "module",
   "devDependencies": {
-    "emch-wasm": "^0.0.0",
+    "emch-rs": "^0.0.0",
     "onnxruntime-web": "^1.15.1"
   }
 }

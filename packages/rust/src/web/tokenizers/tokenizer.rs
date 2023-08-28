@@ -1,8 +1,8 @@
 use wasm_bindgen::prelude::*;
 use js_sys::{
+  JSON,
   JsString,
   Object as JsObject,
-  JSON,
 };
 use std::str::FromStr;
 use crate::encoding::Encoding;
@@ -18,29 +18,16 @@ impl Tokenizer {
   pub fn from_object(
     options: &JsObject,
   ) -> Result<Tokenizer, JsValue> {
-    Ok(Tokenizer {
-      inner:
+    Ok(
+      Tokenizer::from(
         tokenizers::Tokenizer::from_str(
-          JSON::stringify(options)?
-            .as_string()
-            .ok_or("Cannot stringify options")?
-            .as_str()
-        ).map_err(|e| e.to_string())?,
-    })
-  }
-
-  pub fn encode_string(
-    &self,
-    input_string: &str,
-    add_special_tokens: Option<bool>,
-  ) -> Result<Encoding, JsValue> {
-    Ok(Encoding::from(
-      self.inner
-        .encode(
-          input_string,
-          add_special_tokens.unwrap_or(true),
-        ).map_err(|e| e.to_string())?
-    ))
+            JSON::stringify(options)?
+              .as_string()
+              .ok_or("Cannot stringify options")?
+              .as_str()
+          ).map_err(|e| e.to_string())?,
+      )
+    )
   }
 
   pub fn encode_strings(
@@ -48,15 +35,24 @@ impl Tokenizer {
     input_strings: Box<[JsString]>,
     add_special_tokens: Option<bool>,
   ) -> Result<Encoding, JsValue> {
-    Ok(Encoding::from(
-      self.inner
-        .encode_batch(
+    Ok(
+      Encoding::from(
+        self.inner.encode_batch(
           input_strings
             .iter()
-            .filter_map(|s| s.as_string())
+            .map(|s| s.as_string().unwrap_or("".into()))
             .collect::<Vec<_>>(),
           add_special_tokens.unwrap_or(true),
         ).map_err(|e| e.to_string())?
-    ))
+      )
+    )
+  }
+}
+
+impl From<tokenizers::Tokenizer> for Tokenizer {
+  fn from(tokenizer: tokenizers::Tokenizer) -> Self {
+    Tokenizer {
+      inner: tokenizer,
+    }
   }
 }

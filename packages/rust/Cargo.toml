@@ -1,5 +1,5 @@
 [package]
-name = "emch-wasm"
+name = "emch-rs"
 version = "0.0.0"
 edition = "2021"
 description = "Chat with embeddings locally in Web Assembly"
@@ -9,18 +9,19 @@ repository = "https://github.com/AsherJingkongChen/emch.git"
 # See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
 
 [lib]
-name = "emch"
-path = "src/emch.rs"
+path = "src/web/emch.rs"
 crate-type = ["cdylib"]
 
 [dependencies]
-wasm-bindgen = { version = "0.2.87" }
-js-sys = { version = "0.3.64" }
-ndarray = { version = "0.15.6" }
+js-sys = "0.3.64"
 
-[dependencies.getrandom]
-version = "0.2.10"
-features = ["js"]
+[dependencies.wasm-bindgen]
+version = "0.2.87"
+default-features = false
+
+[dependencies.ndarray]
+version = "0.15.6"
+default-features = false
 
 [dependencies.tokenizers]
 version = "0.13.4"
