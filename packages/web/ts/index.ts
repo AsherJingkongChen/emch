@@ -1,4 +1,4 @@
-import { BertModel } from './BertModel';
+import { BertModel } from './lib';
 
 /// tokenizer ///
 const tokenizerOptions = await fetch(
@@ -16,9 +16,10 @@ tokenizerOptions.padding.strategy = {
 console.log({ tokenizerOptions });
 
 const sentences = [
-  'const banner = "I\'m a banner";',
-  'var banner_path;',
-  'function ban(path);'
+  'That is a happy person',
+  'That is a happy dog',
+  'That is a very happy person',
+  'Today is a sunny day',
 ];
 const model = await BertModel.create({
   modelURI: '../onnx/model_quantized.onnx',
@@ -32,8 +33,8 @@ const model = await BertModel.create({
 console.log({ model });
 
 const sembeddings = await model.getSentenceEmbeddings(sentences);
-console.log({ sembeddings });
 
+console.log({ sembeddings });
 for (let i = 0; i < sembeddings.length; i++) {
   for (let j = i + 1; j < sembeddings.length; j++) {
     const cosine_sim = BertModel.cosineSimilarity(

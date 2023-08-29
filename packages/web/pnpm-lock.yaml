@@ -4,9 +4,6 @@ devDependencies:
   emch-rs:
     specifier: ^0.0.0
     version: link:../rust/target/web
-  emch-wasm:
-    specifier: ^0.0.0
-    version: link:../rust/dist
   onnxruntime-web:
     specifier: ^1.15.1
     version: 1.15.1

@@ -46,7 +46,7 @@ import httpProxy from 'http-proxy';
     },
   };
   const bundler = await esbuild.context({
-    entryPoints: ['./packages/web/ts/home.ts'],
+    entryPoints: ['./packages/web/ts/index.ts'],
     outdir: './packages/web/dist/js/',
     format: 'esm',
     bundle: true,

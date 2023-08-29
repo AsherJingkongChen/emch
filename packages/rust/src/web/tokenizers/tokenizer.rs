@@ -21,11 +21,25 @@ impl Tokenizer {
     Ok(
       Tokenizer::from(
         tokenizers::Tokenizer::from_str(
-            JSON::stringify(options)?
+            &JSON::stringify(options)?
               .as_string()
-              .ok_or("Cannot stringify options")?
-              .as_str()
+              .unwrap_or("".into())
           ).map_err(|e| e.to_string())?,
+      )
+    )
+  }
+
+  pub fn encode_string(
+    &self,
+    input_string: &str,
+    add_special_tokens: Option<bool>,
+  ) -> Result<Encoding, JsValue> {
+    Ok(
+      Encoding::from(
+        self.inner.encode(
+          input_string,
+          add_special_tokens.unwrap_or(true),
+        ).map_err(|e| e.to_string())?
       )
     )
   }
