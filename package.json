@@ -2,7 +2,7 @@
   "name": "emch",
   "version": "0.0.0",
   "license": "MIT",
-  "description": "Chat with embeddings locally",
+  "description": "Embedded search",
   "repository": {
     "type": "git",
     "url": "https://github.com/AsherJingkongChen/emch.git"

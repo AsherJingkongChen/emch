@@ -12,7 +12,7 @@ pub struct Metric;
 #[wasm_bindgen]
 impl Metric {
   #[wasm_bindgen]
-  pub fn cosine_similarity(
+  pub fn get_cosine_similarity(
     embedding_0: &JsFloat32Array,
     embedding_1: &JsFloat32Array,
   ) -> f32 {

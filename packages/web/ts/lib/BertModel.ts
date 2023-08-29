@@ -3,11 +3,10 @@ import {
   InferenceSession,
   Tensor,
 } from 'onnxruntime-web';
-import emchInit, {
+import initEmch, {
   InitInput as EmchInitInput,
-  Metric,
   Tokenizer,
-  Task,
+  Pooling,
 } from 'emch-rs';
 
 export class BertModel {
@@ -20,7 +19,7 @@ export class BertModel {
   }: BertModel.CreateOptions
   ): Promise<BertModel> {
     OrtEnv.wasm.wasmPaths = ortWasmDir;
-    await emchInit(emchWasmSource);
+    await initEmch(emchWasmSource);
 
     const model = await InferenceSession.create(modelURI, modelOptions);
     const tokenizer = new Tokenizer(tokenizerOptions);
@@ -41,12 +40,47 @@ export class BertModel {
     this.free = undefined as any;
   }
 
+  async getSentenceEmbedding(
+    inputSentence: string,
+  ): Promise<Float32Array> {
+    /// tokenization ///
+    const encoding = this.tokenizer.encode(inputSentence, true);
+    const { input_ids, attention_mask, token_type_ids } = encoding;
+    const { length: sequence_size } = input_ids;
+    const dimensions = [1, sequence_size];
+    const model_input = {
+      input_ids: new Tensor(input_ids, dimensions),
+      attention_mask: new Tensor(attention_mask, dimensions),
+      token_type_ids: new Tensor(token_type_ids, dimensions),
+    };
+    encoding.free();
+
+    /// inferencing ///
+    const {
+      last_hidden_state: {
+        data: last_hidden_state,
+        dims: { 2: hidden_size },
+      },
+    } = await this.model.run(model_input);
+
+    /// pooling ///
+    const pooled_embedding =
+      Pooling.get_mean_pooled_embedding(
+        last_hidden_state as Float32Array,
+        attention_mask,
+        sequence_size,
+        hidden_size,
+      );
+
+    return pooled_embedding;
+  }
+
   async getSentenceEmbeddings(
     inputSentences: string[],
   ): Promise<Float32Array[]> {
-    const encoding = this.tokenizer.encode_strings(inputSentences, true);
+    /// tokenization ///
+    const encoding = this.tokenizer.encode_batch(inputSentences, true);
     const { input_ids, attention_mask, token_type_ids } = encoding;
-    encoding.free();
     const { length: batch_size } = inputSentences;
     const { length: total_size } = input_ids;
     const sequence_size = total_size / batch_size;
@@ -56,26 +90,27 @@ export class BertModel {
       attention_mask: new Tensor(attention_mask, dimensions),
       token_type_ids: new Tensor(token_type_ids, dimensions),
     };
+    encoding.free();
+
+    /// inferencing ///
     const {
       last_hidden_state: {
         data: last_hidden_state,
         dims: { 2: hidden_size },
       },
     } = await this.model.run(model_input);
-    return Task.get_sentence_embeddings(
-      last_hidden_state as Float32Array,
-      attention_mask,
-      batch_size,
-      sequence_size,
-      hidden_size,
-    );
-  }
 
-  static cosineSimilarity(
-    embedding_0: Float32Array,
-    embedding_1: Float32Array,
-  ): number {
-    return Metric.cosine_similarity(embedding_0, embedding_1);
+    /// pooling ///
+    const pooled_embeddings =
+      Pooling.get_mean_pooled_embeddings(
+        last_hidden_state as Float32Array,
+        attention_mask,
+        batch_size,
+        sequence_size,
+        hidden_size,
+      );
+
+    return pooled_embeddings;
   }
 
   /// private fields ///
@@ -118,3 +153,6 @@ export declare namespace BertModel {
 }
 
 export default BertModel;
+
+/// re-export ///
+export { Metric } from 'emch-rs';

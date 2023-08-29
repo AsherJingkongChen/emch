@@ -15,30 +15,44 @@ pub struct Tokenizer {
 #[wasm_bindgen]
 impl Tokenizer {
   #[wasm_bindgen(constructor)]
-  pub fn from_object(
+  pub fn new(
     options: &JsObject,
   ) -> Result<Tokenizer, JsValue> {
     Ok(
       Tokenizer::from(
         tokenizers::Tokenizer::from_str(
-            JSON::stringify(options)?
-              .as_string()
-              .ok_or("Cannot stringify options")?
-              .as_str()
-          ).map_err(|e| e.to_string())?,
+          &JSON::stringify(options)?
+            .as_string()
+            .unwrap_or("".into())
+        ).map_err(|e| e.to_string())?,
       )
     )
   }
 
-  pub fn encode_strings(
+  pub fn encode(
     &self,
-    input_strings: Box<[JsString]>,
+    input: &str,
+    add_special_tokens: Option<bool>,
+  ) -> Result<Encoding, JsValue> {
+    Ok(
+      Encoding::from(
+        self.inner.encode(
+          input,
+          add_special_tokens.unwrap_or(true),
+        ).map_err(|e| e.to_string())?
+      )
+    )
+  }
+
+  pub fn encode_batch(
+    &self,
+    inputs: Box<[JsString]>,
     add_special_tokens: Option<bool>,
   ) -> Result<Encoding, JsValue> {
     Ok(
       Encoding::from(
         self.inner.encode_batch(
-          input_strings
+          inputs
             .iter()
             .map(|s| s.as_string().unwrap_or("".into()))
             .collect::<Vec<_>>(),

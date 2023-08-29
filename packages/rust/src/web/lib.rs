@@ -1,6 +1,6 @@
-pub mod functional {
+pub mod embeddings {
   pub mod metric;
-  pub mod task;
+  pub mod pooling;
 }
 pub mod tokenizers {
   pub mod encoding;
