@@ -1,6 +1,5 @@
 use std::ops::Div;
 use wasm_bindgen::prelude::*;
-use js_sys::Float32Array as JsFloat32Array;
 use ndarray::{
   Array,
   Ix1,
@@ -11,10 +10,9 @@ pub struct Metric;
 
 #[wasm_bindgen]
 impl Metric {
-  #[wasm_bindgen]
   pub fn get_cosine_similarity(
-    embedding_0: &JsFloat32Array,
-    embedding_1: &JsFloat32Array,
+    embedding_0: &[f32],
+    embedding_1: &[f32],
   ) -> f32 {
     let vecs = (
       Array::<f32, Ix1>::from(embedding_0.to_vec()),

@@ -1,35 +1,32 @@
 import {
-  env as OrtEnv,
+  Environment,
+} from './Environment';
+import {
   InferenceSession,
   Tensor,
 } from 'onnxruntime-web';
-import initEmch, {
-  InitInput as EmchInitInput,
+import {
   Tokenizer,
   Pooling,
 } from 'emch-rs';
 
-export class BertModel {
+class BertModel {
   static async create({
     modelURI,
     modelOptions,
     tokenizerOptions,
-    ortWasmDir,
-    emchWasmSource,
   }: BertModel.CreateOptions
   ): Promise<BertModel> {
-    OrtEnv.wasm.wasmPaths = ortWasmDir;
-    await initEmch(emchWasmSource);
+    if (!Environment.isApplied) {
+      await Environment.create().apply();
+    }
 
     const model = await InferenceSession.create(modelURI, modelOptions);
     const tokenizer = new Tokenizer(tokenizerOptions);
 
     console.assert(this.isModelFieldsValid(model));
 
-    return new BertModel({
-      model,
-      tokenizer,
-    });
+    return new BertModel(model, tokenizer);
   }
 
   free(): void {
@@ -79,7 +76,9 @@ export class BertModel {
     inputSentences: string[],
   ): Promise<Float32Array[]> {
     /// tokenization ///
-    const encoding = this.tokenizer.encode_batch(inputSentences, true);
+    const encoding = this.tokenizer.encode_batch(
+      inputSentences, true, false,
+    );
     const { input_ids, attention_mask, token_type_ids } = encoding;
     const { length: batch_size } = inputSentences;
     const { length: total_size } = input_ids;
@@ -112,19 +111,16 @@ export class BertModel {
 
     return pooled_embeddings;
   }
-
+  
   /// private fields ///
 
   private model: InferenceSession;
   private tokenizer: Tokenizer;
 
-  private constructor({
-    model,
-    tokenizer,
-  }: {
-    model: InferenceSession;
-    tokenizer: Tokenizer;
-  }) {
+  private constructor(
+    model: InferenceSession,
+    tokenizer: Tokenizer,
+  ) {
     this.model = model;
     this.tokenizer = tokenizer;
   }
@@ -142,17 +138,16 @@ export class BertModel {
   }
 }
 
-export declare namespace BertModel {
+declare namespace BertModel {
   interface CreateOptions {
     modelURI: string;
     modelOptions?: InferenceSession.SessionOptions;
     tokenizerOptions: object;
-    ortWasmDir: string;
-    emchWasmSource: EmchInitInput;
   }
 }
 
 export default BertModel;
+export { BertModel };
 
 /// re-export ///
 export { Metric } from 'emch-rs';

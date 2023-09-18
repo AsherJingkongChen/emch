@@ -1,4 +1,4 @@
-#! /usr/bin/env zsh
+#! /usr/bin/env sh
 
 pnpm exec tsc \
   --noEmit \
@@ -7,4 +7,4 @@ pnpm exec tsc \
   --module esnext \
   --target esnext \
   --moduleResolution node \
-  ./packages/web/js/**/*.ts || { exit 1; }
+  ./packages/web/ts/**/*.ts || { exit 1; }

@@ -26,7 +26,7 @@ import httpProxy from 'http-proxy';
       source: './packages/web/node_modules/onnxruntime-web/dist/*.wasm',
       target: './packages/web/dist/wasm/',
     }, {
-      source: './packages/web/node_modules/emch-rs/*.wasm',
+      source: './packages/web/node_modules/emch-rs/emch_rs_bg.wasm',
       target: './packages/web/dist/wasm/',
     },
   ];

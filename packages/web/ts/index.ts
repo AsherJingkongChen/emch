@@ -1,4 +1,8 @@
-import { BertModel, Metric } from './lib';
+import {
+  BertModel,
+  Environment,
+  Metric,
+} from './lib';
 
 /// tokenizer ///
 const tokenizerOptions = await fetch(
@@ -21,24 +25,29 @@ const sentences = [
   'That is a very happy person',
   'Today is a sunny day',
 ];
+
+const env = await Environment.create({
+  ortWasmDir: '../wasm/',
+  emchWasmSource: '../wasm/emch_rs_bg.wasm',
+}).apply();
+console.log({ env });
+
 const model = await BertModel.create({
   modelURI: '../onnx/model_quantized.onnx',
   modelOptions: {
     graphOptimizationLevel: 'all',
   },
   tokenizerOptions,
-  ortWasmDir: '../wasm/',
-  emchWasmSource: '../wasm/emch_rs_bg.wasm',
 });
 console.log({ model });
 
+await model.getSentenceEmbeddings(sentences);
+console.time('getSentenceEmbeddings');
 const sembeddings = await model.getSentenceEmbeddings(sentences);
-console.log(
-  sembeddings.map((e) => (
-    e.map((n) => n ** 2).reduce((p, n) => p + n)
-  ))
-);
+console.timeEnd('getSentenceEmbeddings');
+
 console.log({ sembeddings });
+
 for (let i = 0; i < sembeddings.length; i++) {
   for (let j = i + 1; j < sembeddings.length; j++) {
     const cosine_sim = Metric.get_cosine_similarity(
@@ -51,3 +60,5 @@ for (let i = 0; i < sembeddings.length; i++) {
     });
   }
 }
+
+model.free();

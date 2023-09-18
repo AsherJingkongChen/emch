@@ -11,7 +11,8 @@
   "packageManager": "pnpm@8.5.0",
   "scripts": {
     "rust-dev": "./scripts/rust/dev.sh",
-    "web-dev": "./scripts/web/dev.js"
+    "web-dev": "./scripts/web/dev.js",
+    "rust-build": "./scripts/rust/build.sh"
   },
   "devDependencies": {
     "@types/node": "^20.5.6",

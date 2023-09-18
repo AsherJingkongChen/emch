@@ -14,8 +14,9 @@ pub struct Tokenizer {
 
 #[wasm_bindgen]
 impl Tokenizer {
+  /// builds with options from `tokenizer.json`
   #[wasm_bindgen(constructor)]
-  pub fn new(
+  pub fn from_js(
     options: &JsObject,
   ) -> Result<Tokenizer, JsValue> {
     Ok(
@@ -48,16 +49,36 @@ impl Tokenizer {
     &self,
     inputs: Box<[JsString]>,
     add_special_tokens: Option<bool>,
+    parallelism: Option<bool>,
   ) -> Result<Encoding, JsValue> {
+    let inputs =
+      inputs.iter().map(|s| s.as_string().unwrap_or("".into()));
+    let add_special_tokens =
+      add_special_tokens.unwrap_or(true);
+    let parallelism = parallelism.unwrap_or(false);
     Ok(
       Encoding::from(
-        self.inner.encode_batch(
-          inputs
-            .iter()
-            .map(|s| s.as_string().unwrap_or("".into()))
-            .collect::<Vec<_>>(),
-          add_special_tokens.unwrap_or(true),
-        ).map_err(|e| e.to_string())?
+        if parallelism {
+          // crates tokenizers uses parallelism in encode_batch() by default
+          self.inner
+            .encode_batch(
+              inputs.collect::<Vec<String>>(),
+              add_special_tokens,
+            ).map_err(|e| e.to_string())?
+        } else {
+          use tokenizers::{Result, utils::padding::pad_encodings};
+          let mut encodings =
+            inputs
+              .map(|input| {
+                self.inner.encode(input, add_special_tokens)
+              }).collect::<Result<Vec<tokenizers::Encoding>>>()
+              .map_err(|e| e.to_string())?;
+          if let Some(params) = self.inner.get_padding() {
+            pad_encodings(&mut encodings, params)
+              .map_err(|e| e.to_string())?;
+          }
+          encodings
+        }
       )
     )
   }

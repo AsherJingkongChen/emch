@@ -31,19 +31,13 @@ impl Pooling {
         attention_mask.to_vec(),
       ).map_err(|e| e.to_string())?
       .map(|n| *n as f32);
-    let embeddings_by_mean_pooling: Array<f32, Ix1> =
+    let pooled_embedding: Array<f32, Ix1> =
       last_hidden_state
         .mul(&attention_mask)
         .sum_axis(Axis(0))
         .div(attention_mask.sum().max(f32::EPSILON));
 
-    Ok(
-      Box::from(
-        embeddings_by_mean_pooling
-          .as_slice()
-          .unwrap_or(&[])
-      )
-    )
+    Ok(Box::from(pooled_embedding.as_slice().unwrap_or(&[])))
   }
 
   pub fn get_mean_pooled_embeddings(
@@ -64,7 +58,7 @@ impl Pooling {
         attention_mask.to_vec(),
       ).map_err(|e| e.to_string())?
       .map(|n| *n as f32);
-    let embeddings_by_mean_pooling: Array<f32, Ix2> =
+    let pooled_embeddings: Array<f32, Ix2> =
       last_hidden_state
         .mul(&attention_mask)
         .sum_axis(Axis(1))
@@ -75,7 +69,7 @@ impl Pooling {
         );
 
     Ok(
-      embeddings_by_mean_pooling
+      pooled_embeddings
         .axis_iter(Axis(0))
         .map(|arr| {
           JsFloat32Array::from(

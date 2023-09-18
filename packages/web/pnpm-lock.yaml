@@ -4,6 +4,9 @@ devDependencies:
   emch-rs:
     specifier: ^0.0.0
     version: link:../rust/target/web
+  glass:
+    specifier: ^0.0.0
+    version: link:../glass-rs/build/web
   onnxruntime-web:
     specifier: ^1.15.1
     version: 1.15.1

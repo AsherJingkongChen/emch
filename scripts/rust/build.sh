@@ -1,11 +1,7 @@
 #! /usr/bin/env sh
 
-cd ./packages/rust/ || { exit 1; }
+cd ./packages/rust/;
 wasm-pack build \
   --release \
   --target=web \
-  --out-dir=./target/web/ || { exit 2; }
-
-# is it needed?
-cd ../../ || { exit 3; }
-./scripts/rust/link.sh || { exit 4; }
+  --out-dir=./target/web/;
